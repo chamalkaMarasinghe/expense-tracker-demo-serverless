@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebase";
+import SampleImg from "../../assets/images/upload-img.png"
+import Lg from "../../assets/images/login-background.jpg"
 
 const Dashboard = () => {
 
     const [file, setFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
     const insertItem = async() => {
         try {
@@ -62,7 +65,7 @@ const Dashboard = () => {
         <div className="dashboard-page-wrapper">
             <div className="dasboard-page-pallete">
                 <label htmlFor="img-upload" className="img-upload-label">
-                    Select Image
+                    <img src={file === null ? SampleImg : imagePreview}/>
                     <input 
                         id="img-upload" 
                         className="img-upload" 
@@ -70,7 +73,15 @@ const Dashboard = () => {
                         type="file" 
                         accept="image/png, image/jpg, image/gif, image/jpeg"
                         onChange={(e) => {
-                            setFile(e.target.files[0]);
+                            const img = e.target.files[0];
+                            if (img) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                    setImagePreview(reader.result);
+                                };
+                                reader.readAsDataURL(img);
+                            }
+                            setFile(img);
                         }}
                     />
                 </label>

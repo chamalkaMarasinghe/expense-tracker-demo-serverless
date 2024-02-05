@@ -105,13 +105,27 @@
   display: none;
 }
 
-.dasboard-page-pallete > button, .img-upload-label{
+.img-upload-label{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-upload-label > img{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dasboard-page-pallete > button{
   border: none;
   outline: none;
   cursor: pointer;
   color: white;
   font-weight: bold;
   background-color: #8f5201;
+  margin-top: 5%;
   margin-bottom: 3%;
   padding: 5% 10%;
   border-radius: 5px;
@@ -119,7 +133,7 @@
   transition: transform 0.3s;
 }
 
-.dasboard-page-pallete > button:hover, .img-upload-label:hover{
+.dasboard-page-pallete > button:hover{
   transform: scale(1.1)
 }
 
@@ -127,15 +141,30 @@
   .login-form-wrapper{
     width: 80%;
   }
+
+  .dasboard-page-pallete > button{
+    font-size: 8px;
+    width: 130%;
+    padding: 10% 15%;
+    margin-top: 10%;
+  }
+
 }
 
-@media only screen and (min-width: 280px) and (max-width: 480px){
+@media only screen and (min-width: 279px) and (max-width: 480px){
   .login-form-wrapper{
     width: 80%;
   }
+
+  .dasboard-page-pallete > button{
+    font-size: 10px;
+    width: 130%;
+    /* padding: 10% 15%; */
+    margin-top: 10%;
+  }
 }
 
-@media only screen and (min-width: 481px) and (max-width: 700px){
+@media only screen and (min-width: 480px) and (max-width: 700px){
   .login-form-wrapper{
     width: 80%;
   }
