@@ -15,3 +15,83 @@
   font-size: 3em;
   font-weight: bold;
 }
+
+.login-page-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('./assets/images/login-background.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100vh;
+  /* background-color: red; */
+}
+
+.login-form-wrapper{
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.9);
+  width: 30%;
+  border-radius: 10px;
+  box-shadow: 1px 1px 15px 1px black;
+}
+
+.login-form, .register-form{
+  width: 100%;
+  padding: 10%;
+  /* background-color: blue; */
+}
+
+.login-form{
+  /* background-color: blueviolet; */
+  transition: margin-left 0.5s;
+}
+
+.register-form{
+  margin-right: -100%;
+}
+
+.login-form-field-container{
+  /* background-color: green; */
+}
+
+.login-form-field-container > input, .register-form-field-container  >input{
+  width: 100%;
+}
+
+.input-fields{
+  border: none;
+  outline: none;
+  padding: 8px 16px;
+  margin-bottom: 5%;
+  background-color: #cbe8a9;
+}
+
+.login-err{
+  color: red;
+}
+
+.switch-link{
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+@media only screen and (min-width: 220px) and (max-width: 279px){
+  .login-form-wrapper{
+    width: 80%;
+  }
+}
+
+@media only screen and (min-width: 280px) and (max-width: 480px){
+  .login-form-wrapper{
+    width: 80%;
+  }
+}
+
+@media only screen and (min-width: 481px) and (max-width: 700px){
+  .login-form-wrapper{
+    width: 80%;
+  }
+}
