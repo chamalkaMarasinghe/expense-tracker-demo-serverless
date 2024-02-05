@@ -116,6 +116,7 @@
   height: 100px;
   border-radius: 50%;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .dasboard-page-pallete > button{
@@ -125,6 +126,7 @@
   color: white;
   font-weight: bold;
   background-color: #8f5201;
+  width: 50%;
   margin-top: 5%;
   margin-bottom: 3%;
   padding: 5% 10%;
@@ -137,7 +139,118 @@
   transform: scale(1.1)
 }
 
+/* loading screen styling ------------------------------------------------------------------------------------  */
+
+.loading-screen-wrapper{
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-screen-wrapper > p{
+  color: white;
+  font-size: 20px;
+}
+
+/* expenses page styling -----------------------------------------------------------------------------------------  */
+
+.expenses-page-wrapper{
+  display: flex;
+  /* background-color: red; */
+  min-height: 100vh;
+  padding-top: 3%;
+  padding-bottom: 3%;
+}
+
+.expenses-list-wrapper{
+  /* background-color: wheat; */
+  width: 60%;
+  margin-left: 5%;
+  padding-left: 3%;
+  padding-right: 3%;
+  padding-bottom: 1%;
+  border-radius: 10px;
+  box-shadow: 1px 1px 8px 0.1px gray;
+}
+
+.expenses-header{
+  font-size: 3rem;
+}
+
+.expenses-list{
+  /* background-color: green; */
+  height: 75vh;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  overflow-x: hidden;
+}
+
+.expense-item{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* background-color: orangered; */
+  width: 95%;
+  margin-left: 2.5%;
+  margin-bottom: 4%;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  border-radius: 10px;
+  box-shadow: 1px 1px 8px 0.1px gray;
+}
+
+.expense-item > .col-1{
+  flex-grow: 0;
+  /* background-color: palevioletred; */
+  padding-left: 3%;
+  padding-right: 3%;
+}
+
+.expense-item > .col-2{
+  flex-grow: 1;
+  flex-direction: column; 
+  /* background-color: lightseagreen; */
+  padding-right: 3%;
+}
+
+.expense-item > .col-1 > img{
+  width: 13rem;
+  height: 13rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.expense-item > .col-2 > .title{
+  color: #4e4f52;
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: -1px;
+}
+
+.expense-item > .col-2 > .date{
+  color: #979ba1;
+  font-size: 1.5rem;
+}
+
+.expense-item > .col-2 > .description{
+  color: #5a5c5e;
+  font-size: 2rem;
+  margin-top: -10px;
+}
+
+/* media quries --------------------------------------------------------------------------------------------------- */
+
 @media only screen and (min-width: 220px) and (max-width: 279px){
+  html{
+    font-size: 5px;
+  }
+
   .login-form-wrapper{
     width: 80%;
   }
@@ -149,9 +262,33 @@
     margin-top: 10%;
   }
 
+  .expenses-list-wrapper{
+    width: 90%;
+    margin-left: 5%;
+  }
+
+  .expense-item{
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .expense-item > .col-1 > img{
+    width: 10rem;
+    height: 10rem;
+  }
+
+  .expense-item > .col-2{
+    width: 100%;
+    padding-left: 5%;
+  }
+
 }
 
 @media only screen and (min-width: 279px) and (max-width: 480px){
+  html{
+    font-size: 6px;
+  }
+
   .login-form-wrapper{
     width: 80%;
   }
@@ -159,13 +296,52 @@
   .dasboard-page-pallete > button{
     font-size: 10px;
     width: 130%;
-    /* padding: 10% 15%; */
+    margin-top: 10%;
+  }
+
+  .expenses-list-wrapper{
+    width: 90%;
+    margin-left: 5%;
+  }
+
+  .expense-item{
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .expense-item > .col-1 > img{
+    width: 10rem;
+    height: 10rem;
+  }
+
+  .expense-item > .col-2{
+    width: 100%;
+    padding-left: 5%;
+  }
+}
+
+@media only screen and (min-width: 480px) and (max-width: 720px){
+  html{
+    font-size: 6px;
+  }
+
+  .login-form-wrapper{
+    width: 80%;
+  }
+
+  .dasboard-page-pallete > button{
+    font-size: 10px;
+    width: 130%;
     margin-top: 10%;
   }
 }
 
-@media only screen and (min-width: 480px) and (max-width: 700px){
+@media only screen and (min-width: 720px) and (max-width: 1200px){
   .login-form-wrapper{
     width: 80%;
+  }
+
+  .dasboard-page-pallete > button{
+    width: 70%;
   }
 }

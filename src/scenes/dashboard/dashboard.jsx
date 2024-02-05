@@ -1,20 +1,26 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebase";
-import SampleImg from "../../assets/images/upload-img.png"
-import Lg from "../../assets/images/login-background.jpg"
+import SampleImg from "../../assets/images/upload-img.png";
+import LoadingScreen from '../../components/loadingScreen';
 
 const Dashboard = () => {
 
+    const navigate = useNavigate();
+
     const [file, setFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const insertItem = async() => {
         try {
             if(!file){
                 window.alert("Plesae upload the image first!");
             }else{
+                setLoading(true);
+
                 const fileName = new Date().getTime() + file.name;
                 const storageRef = ref(storage, fileName);
                 const uploadTask = uploadBytesResumable(storageRef, file);
@@ -23,6 +29,7 @@ const Dashboard = () => {
                     (snapshot) => {
                         switch (snapshot.state) {
                             case 'paused':
+                                setLoading(false);
                                 window.alert('Upload is paused');
                                 break;
                         }
@@ -30,10 +37,13 @@ const Dashboard = () => {
                     (error) => {
                         switch (error.code) {
                             case 'storage/unauthorized':
+                                setLoading(false);
                                 break;
                             case 'storage/canceled':
+                                setLoading(false);
                                 break;
                             case 'storage/unknown':
+                                setLoading(false);
                                 break;
                             default:
                                 break;
@@ -51,18 +61,23 @@ const Dashboard = () => {
                                 img: downloadURL,
                                 currentDate: serverTimestamp()
                             });
+                            setLoading(false);
                             window.alert(`Document written with ID:  ${docRef.id}`);
                         });
                     }
                 );
             }
         } catch (e) {
+            setLoading(false);
             window.alert(`Error adding document:  ${e}`);
         }
     };
 
     return(
         <div className="dashboard-page-wrapper">
+            {
+                loading && <LoadingScreen />
+            }
             <div className="dasboard-page-pallete">
                 <label htmlFor="img-upload" className="img-upload-label">
                     <img src={file === null ? SampleImg : imagePreview}/>
@@ -86,6 +101,7 @@ const Dashboard = () => {
                     />
                 </label>
                 <button onClick={() => {insertItem()}}>Insert Expense</button>
+                <button onClick={() => {navigate('/expense')}}>Display Expense</button>
             </div>
         </div>
     );

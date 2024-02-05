@@ -5,6 +5,7 @@ import './App.css';
 import Home from './scenes/home/home'
 import Login from './scenes/login/login'
 import Dashboard from './scenes/dashboard/dashboard';
+import Expenses from './scenes/expenses/expenses';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
           <Route path='/' element={<Home />}/>
           <Route path='/login' element={user === null ? <Login /> : <Navigate to="/dashboard" replace={true} />}/>
           <Route path='/dashboard' element={user === null ? <Navigate to="/login" replace={true} /> : <Dashboard />}/>
+          <Route path='/expense' element={user === null ? <Navigate to="/login" replace={true} /> : <Expenses />}/>
         </Routes>
       </BrowserRouter>
     </div>
