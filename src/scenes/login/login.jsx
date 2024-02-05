@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useReducer } from "react";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth'
 import {auth} from '../../firebase'
+import { setUser } from "../../redux/action";
 
 const Login = () => {
+
+    const { user } = useSelector(state => state.userReducer);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [email, setEmail] = useState('');
     const [pw, setPw] = useState('');
@@ -19,7 +26,8 @@ const Login = () => {
                 setLoginError(false);
                 // Signed in 
                 const user = userCredential.user;
-                console.log(user);
+                dispatch(setUser({"user" : {"email": user.email}}));
+                navigate('/dashboard');
             })
             .catch((error) => {
                 setLoginError(true);
@@ -34,10 +42,10 @@ const Login = () => {
                 setRegisterError(false);
                 // Signed up
                 const user = userCredential.user;
-                console.log(user);
+                dispatch(setUser({"user" : {"email": user.email}}));
+                navigate('/dashboard');
             })
             .catch((error) => {
-                console.log(error.message);
                 setRegisterError(true);
             });
     }

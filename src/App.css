@@ -1,3 +1,6 @@
+
+/* login page styles -------------------------------------------------------------------------------------------------- */
+
 .app-inner-wrapper{
   display: flex;
   flex-direction: column;
@@ -76,6 +79,42 @@
   text-align: center;
   font-size: 12px;
   cursor: pointer;
+}
+
+/* dashboard page styles -------------------------------------------------------------------------------------------------- */
+
+.dashboard-page-wrapper{
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  /* background-color: red; */
+}
+
+.dasboard-page-pallete{
+  display: flex;
+  width: 50%;
+  padding: 10%;
+  align-items: center;
+  justify-content: center;
+  /* background-color: blue; */
+}
+
+.dasboard-page-pallete > button{
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  background-color: #8f5201;
+  padding: 5% 10%;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px 1px gray;
+  transition: transform 0.3s;
+}
+
+.dasboard-page-pallete > button:hover{
+  transform: scale(1.1)
 }
 
 @media only screen and (min-width: 220px) and (max-width: 279px){

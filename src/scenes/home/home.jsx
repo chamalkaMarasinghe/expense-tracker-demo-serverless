@@ -8,7 +8,7 @@ const Home = () => {
     return(
         <div className='app-inner-wrapper'>
             <p className='hello-text'>Hello expense tracker</p>
-            <button onClick={() => {navigate('/login')}}>Log In</button>
+            <button onClick={() => {navigate('/login')}}>Get In</button>
         </div>
     );
 };
