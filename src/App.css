@@ -144,7 +144,7 @@
 .loading-screen-wrapper{
   display: flex;
   background-color: rgba(0, 0, 0, 0.8);
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
@@ -185,6 +185,10 @@
 
 .expenses-list{
   /* background-color: green; */
+  background-image: url('./assets/images/spinner.gif');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 150px;
   height: 75vh;
   padding-top: 3%;
   padding-bottom: 3%;
@@ -196,6 +200,10 @@
   flex-direction: row;
   align-items: center;
   /* background-color: orangered; */
+  background-image: url('./assets/images/expense-background.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   width: 95%;
   margin-left: 2.5%;
   margin-bottom: 4%;
@@ -203,6 +211,7 @@
   padding-bottom: 3%;
   border-radius: 10px;
   box-shadow: 1px 1px 8px 0.1px gray;
+  overflow: hidden;
 }
 
 .expense-item > .col-1{
@@ -243,7 +252,6 @@
   font-size: 2rem;
   margin-top: -10px;
 }
-
 /* media quries --------------------------------------------------------------------------------------------------- */
 
 @media only screen and (min-width: 220px) and (max-width: 279px){
