@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { getDocs, deleteDoc, doc, collection } from "firebase/firestore";
 import { db } from "../../firebase";
+import SampleImg from '../../assets/images/upload-img.png';
 
 const Expenses = () => {
 
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [expenseList, setExpenseList] = useState([]);
     const [dataFetching, setDataFetching] = useState(true);
+    const [file, setFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [expenseData, setExpenseData] = useState({
+        id: '',
+        title: '',
+        date: '',
+        description: '',
+        img: ''
+    });
 
     //fetch all the data from a collection
     const loadData = async() => {
@@ -20,11 +31,76 @@ const Expenses = () => {
 
     //delete a item
     const deleteItem = async(id) => {
-
         await deleteDoc(doc(db, "expenses", id));
     }
 
-    // handle the styling during the data fetching time
+    //load the clicked item's data into the updateable form
+    const setUpdateableData = (expense) => {
+        setExpenseData({
+            id: expense.id,
+            title: expense.title,
+            date: expense.expenseDate,
+            description: expense.description,
+            img: expense.img
+        });
+        // document.getElementById('expense-updateable-img').src=expenseData.img;
+        // console.log(expenseData);
+    }
+
+    //update a item
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if(!expenseData.id){
+            window.alert('Please select a document to update!')
+        }else{
+            console.log(expenseData);
+        }
+    }
+
+    const openDrawer = () => {
+        const updateWrapper = document.getElementsByClassName("expenses-update-wrapper")[0];
+        updateWrapper.style.display='block';
+        updateWrapper.style.transition='margin-left 0.2s';
+        updateWrapper.style.marginLeft='20%';
+
+        document.getElementsByClassName("expenses-page-wrapper")[0].style.paddingTop='0px';
+        document.getElementsByClassName("expenses-update-wrapper")[0].style.paddingBottom='0px';
+    }
+
+    const closeDrawer = () => {
+        const updateWrapper = document.getElementsByClassName("expenses-update-wrapper")[0];
+        updateWrapper.style.marginLeft='100%';
+        updateWrapper.style.display='none';
+
+        document.getElementsByClassName("expenses-page-wrapper")[0].style.paddingTop='1%';
+        document.getElementsByClassName("expenses-update-wrapper")[0].style.paddingBottom='1%';
+    }
+
+    // reset left margin of expense card items after delete single expense card
+    const resetStyling = () => {
+        const items = document.getElementsByClassName("expense-item");
+        for (var i = 0; i < items.length; ++i) {
+            items[i].style.marginLeft = '2.5%';
+        }
+    }
+
+    // define a listner to detect the screen width
+    useEffect(() => {
+        const handleResize = () => {
+            setScreenWidth(window.innerWidth);
+            if(window.innerWidth > 480){
+                const x = document.getElementsByClassName('expenses-update-wrapper')[0];
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        
+        // Cleanup
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    // handle the styling during the data fetching time(show loading gif during fetching data)
     useEffect(() => {
         if(dataFetching){
             const items = document.getElementsByClassName("expense-item");
@@ -40,13 +116,7 @@ const Expenses = () => {
         }
     }, [dataFetching]);
 
-    const resetStyling = () => {
-        const items = document.getElementsByClassName("expense-item");
-        for (var i = 0; i < items.length; ++i) {
-            items[i].style.marginLeft = '2.5%';
-        }
-    }
-
+    // loading data 
     useEffect(() => {
         loadData().then((data) => {setExpenseList(data); setDataFetching(false)});
     }, [])
@@ -73,6 +143,14 @@ const Expenses = () => {
                                         <div className="title">
                                             {expense.title}
                                             <div className="cancel-icon">
+                                                <i className="fa-regular fa-pen-to-square" 
+                                                    onClick={() => {
+                                                        if(screenWidth <= 480)
+                                                            openDrawer();
+                                                        setUpdateableData(expense);
+                                                    }}
+                                                >
+                                                </i>
                                                 <i className="fa-solid fa-xmark"
                                                     onClick={() => {
                                                         document.getElementById(index).style.marginLeft = '100%';
@@ -98,6 +176,58 @@ const Expenses = () => {
                         })
                     }
                 </div>
+            </div>
+            <div className="expenses-update-wrapper">
+                <div className="expenses-header update-header">
+                    <p>
+                        {
+                            screenWidth > 480 ? 'Update Expense' : <i className="fa-solid fa-angles-right" onClick={() => closeDrawer()}></i>
+                        }
+                    </p>
+                    <hr />
+                </div>
+                <div className="body">
+                    <div className="img-wrapper">
+                        <label htmlFor="img-upload" className="img-upload-label">
+                            <img 
+                                src={expenseData.img != '' ? expenseData.img : file === null ? SampleImg : imagePreview} 
+                                id="expense-updateable-img"
+                            />
+                            <input 
+                                id="img-upload" 
+                                className="img-upload" 
+                                name="img-upload" 
+                                type="file" 
+                                accept="image/png, image/jpg, image/gif, image/jpeg"
+                                onChange={(e) => {
+                                    const img = e.target.files[0];
+                                    if (img) {
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => {
+                                            setImagePreview(reader.result);
+                                        };
+                                        reader.readAsDataURL(img);
+                                    }
+                                    setFile(img);
+                                }}
+                            />
+                        </label>
+                    </div>
+                    <form onSubmit={(e) => {handleSubmit(e)}}>
+                        <div className="text-edit-container">
+                            <input name="title" type="text" placeholder="Title" value={expenseData.title} onChange={(e) => {setExpenseData({...expenseData, title: e.target.value})}} />
+                        </div>
+                        <div className="text-edit-container">
+                            <input name="date" type="text" placeholder="Date" value={expenseData.date} onChange={(e) => {setExpenseData({...expenseData, date: e.target.value})}} />
+                        </div>
+                        <div className="text-edit-container">
+                            <input name="description" type="text" placeholder="Dscription" value={expenseData.description} onChange={(e) => {setExpenseData({...expenseData, description: e.target.value})}} />
+                        </div>
+                        <div className="text-edit-container submit-btn-container">
+                            <input name="submit" type="submit" value='Update' onChange={() => {}} />
+                        </div>
+                    </form>
+                </div>    
             </div>
         </div>
     );
