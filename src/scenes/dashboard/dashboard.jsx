@@ -14,6 +14,8 @@ const Dashboard = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [loading, setLoading] = useState(false);
 
+
+    //insert a item
     const insertItem = async() => {
         try {
             if(!file){

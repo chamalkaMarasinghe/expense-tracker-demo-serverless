@@ -212,6 +212,7 @@
   border-radius: 10px;
   box-shadow: 1px 1px 8px 0.1px gray;
   overflow: hidden;
+  transition: margin-left 0.2s;
 }
 
 .expense-item > .col-1{
@@ -236,10 +237,24 @@
 }
 
 .expense-item > .col-2 > .title{
+  display: flex;
+  /* background-color: red; */
   color: #4e4f52;
   font-size: 3rem;
   font-weight: bold;
   margin-bottom: -1px;
+}
+
+.expense-item > .col-2 > .title > .cancel-icon{
+  display: flex;
+  flex-grow: 8;
+  align-items: center;
+  justify-content: end;
+  /* background-color: green; */
+}
+
+.expense-item > .col-2 > .title > .cancel-icon > i{
+  cursor: pointer;
 }
 
 .expense-item > .col-2 > .date{
