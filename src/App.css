@@ -6,6 +6,7 @@
   flex-direction: column;
   flex-grow: 1;
   height: 100vh;
+  /* width: 100%; */
   justify-content: center;
   align-items: center;
   /* background-color: red; */
@@ -21,12 +22,15 @@
 
 .login-page-wrapper{
   display: flex;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
   justify-content: center;
   align-items: center;
   background-image: url('./assets/images/login-background.jpg');
   background-size: cover;
   background-repeat: no-repeat;
-  height: 100vh;
+  /* width: 100%; */
   /* background-color: red; */
 }
 
@@ -285,6 +289,7 @@
   padding-bottom: 1%;
   border-radius: 10px;
   box-shadow: 1px 1px 8px 0.1px gray;
+  overflow-x: hidden;
   transition: margin-left 0.2s;
 }
 
@@ -296,7 +301,7 @@
   display: flex;
   flex-direction: column;
   height: 90vh;
-  background-color: #8f5201;
+  /* background-color: #8f5201; */
   overflow-x: hidden;
 }
 

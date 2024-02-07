@@ -59,7 +59,7 @@ const Dashboard = () => {
                             const docRef = await addDoc(collection(db, "expenses"), {
                                 title: 'fake title 1',
                                 description: 'fake description 1',
-                                expenseDate: '2023-12-23',
+                                expenseDate: '2023-02-23',
                                 img: downloadURL,
                                 currentDate: serverTimestamp()
                             });

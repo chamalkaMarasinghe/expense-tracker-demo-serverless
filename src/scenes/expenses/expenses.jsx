@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getDocs, deleteDoc, doc, collection } from "firebase/firestore";
-import { db } from "../../firebase";
+import { ref, deleteObject } from "firebase/storage";
+import { db, storage } from "../../firebase";
 import SampleImg from '../../assets/images/upload-img.png';
 
 const Expenses = () => {
@@ -30,12 +31,23 @@ const Expenses = () => {
     }
 
     //delete a item
-    const deleteItem = async(id) => {
-        await deleteDoc(doc(db, "expenses", id));
+    const deleteItem = async(expense) => {
+        await deleteDoc(doc(db, "expenses", expense.id));
+        
+        // Create a reference to the file to delete(image of the document in firebase storage)
+        const desertRef = ref(storage, expense.img);
+
+        // Delete the file(image)
+        deleteObject(desertRef).then(() => {
+            // File deleted successfully
+        }).catch((error) => {
+            window.alert("Document is deleted; But it's image is still here!");
+        });
     }
 
     //load the clicked item's data into the updateable form
     const setUpdateableData = (expense) => {
+        setFile(null);
         setExpenseData({
             id: expense.id,
             title: expense.title,
@@ -43,8 +55,6 @@ const Expenses = () => {
             description: expense.description,
             img: expense.img
         });
-        // document.getElementById('expense-updateable-img').src=expenseData.img;
-        // console.log(expenseData);
     }
 
     //update a item
@@ -53,7 +63,13 @@ const Expenses = () => {
         if(!expenseData.id){
             window.alert('Please select a document to update!')
         }else{
-            console.log(expenseData);
+            //if the user does not changed the current image
+            if(file === null){
+                console.log('img not changed');
+            }
+            else{//if the user has changed the current image
+                console.log('image changed');
+            }
         }
     }
 
@@ -157,7 +173,7 @@ const Expenses = () => {
                                                         setTimeout(() => {
                                                             setExpenseList(expenseList.filter(item => {return item.id != expense.id}));
                                                         }, 210);
-                                                        deleteItem(expense.id);
+                                                        deleteItem(expense);
                                                     }}
                                                 >
                                                 </i>
@@ -190,7 +206,7 @@ const Expenses = () => {
                     <div className="img-wrapper">
                         <label htmlFor="img-upload" className="img-upload-label">
                             <img 
-                                src={expenseData.img != '' ? expenseData.img : file === null ? SampleImg : imagePreview} 
+                                src={expenseData.img != '' && file === null ? expenseData.img : file === null ? SampleImg : imagePreview} 
                                 id="expense-updateable-img"
                             />
                             <input 
