@@ -339,12 +339,11 @@
   margin-bottom: 3%;
   border: 1px solid gray;
   border-radius: 10px;
-  transition: transform 0.3s;
+  transition: border-inline 0.3s;
 }
 
 .expenses-update-wrapper > .body > form > .text-edit-container > input:focus{
-  border: 1px solid #003964;
-  transform: scale(1.05);
+  border-inline:  5px solid #003964;
 }
 
 .expenses-update-wrapper > .body > form > .text-edit-container > input[type='submit']{

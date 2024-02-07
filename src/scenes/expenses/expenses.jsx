@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { getDocs, deleteDoc, doc, collection } from "firebase/firestore";
-import { ref, deleteObject } from "firebase/storage";
+import { getDocs, setDoc, deleteDoc, doc, collection, serverTimestamp, or } from "firebase/firestore";
+import { ref, deleteObject, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebase";
 import SampleImg from '../../assets/images/upload-img.png';
+import LoadingScreen from "../../components/loadingScreen";
 
 const Expenses = () => {
 
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [expenseList, setExpenseList] = useState([]);
     const [dataFetching, setDataFetching] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [file, setFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [clickedExpense, setClickedExpense] = useState(null);
     const [expenseData, setExpenseData] = useState({
         id: '',
         title: '',
         date: '',
         description: '',
-        img: ''
+        img: '',
+        imgFileName: ''
     });
 
     //fetch all the data from a collection
@@ -47,29 +51,96 @@ const Expenses = () => {
 
     //load the clicked item's data into the updateable form
     const setUpdateableData = (expense) => {
-        setFile(null);
         setExpenseData({
             id: expense.id,
             title: expense.title,
             date: expense.expenseDate,
             description: expense.description,
-            img: expense.img
+            img: expense.img,
+            imgFileName: expense.imgFileName
         });
     }
 
     //update a item
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        if(!expenseData.id){
-            window.alert('Please select a document to update!')
+        if(!expenseData.id || !(expenseData.title !== clickedExpense.title || expenseData.date !== clickedExpense.expenseDate || expenseData.description !== clickedExpense.description || file !== null)){
+            window.alert('Please select a document to update or nothing to update!')
         }else{
+            setLoading(true);
+
             //if the user does not changed the current image
             if(file === null){
-                console.log('img not changed');
+                // Add a new document in collection "cities"
+                await setDoc(doc(db, "expenses", expenseData.id), {
+                    title: expenseData.title,
+                    description: expenseData.description,
+                    expenseDate: expenseData.date,
+                    img: expenseData.img,
+                    imgFileName: expenseData.imgFileName,
+                    currentDate: serverTimestamp(),
+                });
+                setLoading(false);
+                window.alert(`Document Updated`);
             }
             else{//if the user has changed the current image
-                console.log('image changed');
+                //we use the same file name; hence override the image
+                const storageRef = ref(storage, expenseData.imgFileName);
+                const uploadTask = uploadBytesResumable(storageRef, file);
+
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        switch (snapshot.state) {
+                            case 'paused':
+                                setLoading(false);
+                                window.alert('Upload is paused');
+                                break;
+                        }
+                    }, 
+                    (error) => {
+                        switch (error.code) {
+                            case 'storage/unauthorized':
+                                setLoading(false);
+                                break;
+                            case 'storage/canceled':
+                                setLoading(false);
+                                break;
+                            case 'storage/unknown':
+                                setLoading(false);
+                                break;
+                            default:
+                                break;
+                        }
+                    }, 
+                    async() => {
+                        // Upload completed successfully, now we can get the download URL
+                        // if the img is uploaded successfully, other data is get saved in the db
+                        //set the previous downloadurl - but the img content is got overriden by new img
+                        await setDoc(doc(db, "expenses", expenseData.id), {
+                            title: expenseData.title,
+                            description: expenseData.description,
+                            expenseDate: expenseData.date,
+                            img: expenseData.img,
+                            imgFileName: expenseData.imgFileName,
+                            currentDate: serverTimestamp(),
+                        });
+                        setLoading(false);
+                        window.alert(`Document Updated`);
+                    }
+                );
             }
+
+            //reset form data and img upload data
+            setFile(null);
+            setExpenseData({
+                id: '',
+                title: '',
+                date: '',
+                description: '',
+                img: '',
+                imgFileName: ''
+            });
+            setClickedExpense(null);
         }
     }
 
@@ -139,6 +210,9 @@ const Expenses = () => {
 
     return(
         <div className="expenses-page-wrapper">
+            {
+                loading && <LoadingScreen />
+            }
             <div className="expenses-list-wrapper">
                 <div className="expenses-header">
                     <p>Expenses</p>
@@ -164,6 +238,7 @@ const Expenses = () => {
                                                         if(screenWidth <= 480)
                                                             openDrawer();
                                                         setUpdateableData(expense);
+                                                        setClickedExpense(expense);
                                                     }}
                                                 >
                                                 </i>

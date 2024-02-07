@@ -61,6 +61,7 @@ const Dashboard = () => {
                                 description: 'fake description 1',
                                 expenseDate: '2023-02-23',
                                 img: downloadURL,
+                                imgFileName: fileName,
                                 currentDate: serverTimestamp()
                             });
                             setLoading(false);
