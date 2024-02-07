@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getDocs, setDoc, deleteDoc, doc, collection, serverTimestamp, or } from "firebase/firestore";
+import { getDocs, addDoc, setDoc, deleteDoc, doc, collection, serverTimestamp, or } from "firebase/firestore";
 import { ref, deleteObject, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebase";
 import SampleImg from '../../assets/images/upload-img.png';
@@ -44,6 +44,7 @@ const Expenses = () => {
         // Delete the file(image)
         deleteObject(desertRef).then(() => {
             // File deleted successfully
+            setExpenseList(expenseList.filter(item => {return item.id != expense.id}));
         }).catch((error) => {
             window.alert("Document is deleted; But it's image is still here!");
         });
@@ -61,9 +62,10 @@ const Expenses = () => {
         });
     }
 
-    //update a item
-    const handleSubmit = async(e) => {
+    //update an expense item
+    const handleSubmitUpdate = async(e) => {
         e.preventDefault();
+
         if(!expenseData.id || !(expenseData.title !== clickedExpense.title || expenseData.date !== clickedExpense.expenseDate || expenseData.description !== clickedExpense.description || file !== null)){
             window.alert('Please select a document to update or nothing to update!')
         }else{
@@ -130,6 +132,19 @@ const Expenses = () => {
                 );
             }
 
+            //set changes in local data array
+            setExpenseList(expenseList.filter(item => {
+                if(item.id === expenseData.id){
+                    item.title =  expenseData.title;
+                    item.description =  expenseData.description;
+                    item.expenseDate =  expenseData.date;
+                    item.img =  expenseData.img;
+                    item.imgFileName =  expenseData.imgFileName;
+                    item.currentDate =  serverTimestamp();
+                }
+                return item;
+            }));
+
             //reset form data and img upload data
             setFile(null);
             setExpenseData({
@@ -141,6 +156,90 @@ const Expenses = () => {
                 imgFileName: ''
             });
             setClickedExpense(null);
+        }
+    }
+
+    // insert an expense item
+    const handleSubmitInsert = (e) => {
+        e.preventDefault();
+
+        if(file){
+            setLoading(true);
+
+            const fileName = new Date().getTime() + file.name;
+            const storageRef = ref(storage, fileName);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    switch (snapshot.state) {
+                        case 'paused':
+                            setLoading(false);
+                            window.alert('Upload is paused');
+                            break;
+                    }
+                }, 
+                (error) => {
+                    switch (error.code) {
+                        case 'storage/unauthorized':
+                            setLoading(false);
+                            break;
+                        case 'storage/canceled':
+                            setLoading(false);
+                            break;
+                        case 'storage/unknown':
+                            setLoading(false);
+                            break;
+                        default:
+                            break;
+                    }
+                }, 
+                () => {
+                    // Upload completed successfully, now we can get the download URL
+                    // if the img is uploaded successfully, other data is get saved in the db
+                    getDownloadURL(uploadTask.snapshot.ref).then(async(downloadURL) => {
+                        //get the img uploaded url and it save in the database
+                        const docRef = await addDoc(collection(db, "expenses"), {
+                            title: expenseData.title,
+                            description: expenseData.description,
+                            expenseDate: expenseData.date,
+                            img: downloadURL,
+                            imgFileName: fileName,
+                            currentDate: serverTimestamp()
+                        });
+
+
+                        //set changes in local data array
+                        setExpenseList([...expenseList, 
+                            {
+                                title: expenseData.title,
+                                description: expenseData.description,
+                                expenseDate: expenseData.date,
+                                img: downloadURL,
+                                imgFileName: expenseData.imgFileName,
+                                currentDate: serverTimestamp()
+                            }
+                        ]);
+
+                        setLoading(false);
+                        window.alert(`Document written with ID:  ${docRef.id}`);
+
+                        //reset form data and img upload data
+                        setFile(null);
+                        setExpenseData({
+                            id: '',
+                            title: '',
+                            date: '',
+                            description: '',
+                            img: '',
+                            imgFileName: ''
+                        });
+                        setClickedExpense(null);
+                    });
+                }
+            );
+        }else{
+            window.alert('Please upload an image!');
         }
     }
 
@@ -161,6 +260,17 @@ const Expenses = () => {
 
         document.getElementsByClassName("expenses-page-wrapper")[0].style.paddingTop='1%';
         document.getElementsByClassName("expenses-update-wrapper")[0].style.paddingBottom='1%';
+
+        setFile(null);
+        setExpenseData({
+            id: '',
+            title: '',
+            date: '',
+            description: '',
+            img: '',
+            imgFileName: ''
+        });
+        setClickedExpense(null);
     }
 
     // reset left margin of expense card items after delete single expense card
@@ -206,8 +316,9 @@ const Expenses = () => {
     // loading data 
     useEffect(() => {
         loadData().then((data) => {setExpenseList(data); setDataFetching(false)});
-    }, [])
+    }, []);
 
+    // console.log(document.getElementById("insert-update-button"));
     return(
         <div className="expenses-page-wrapper">
             {
@@ -245,9 +356,6 @@ const Expenses = () => {
                                                 <i className="fa-solid fa-xmark"
                                                     onClick={() => {
                                                         document.getElementById(index).style.marginLeft = '100%';
-                                                        setTimeout(() => {
-                                                            setExpenseList(expenseList.filter(item => {return item.id != expense.id}));
-                                                        }, 210);
                                                         deleteItem(expense);
                                                     }}
                                                 >
@@ -266,6 +374,13 @@ const Expenses = () => {
                             );
                         })
                     }
+                </div>
+                <div id="floating-button">
+                    <i className="fa-solid fa-plus"
+                        onClick={() => {
+                            openDrawer();
+                        }}
+                    ></i>
                 </div>
             </div>
             <div className="expenses-update-wrapper">
@@ -301,21 +416,22 @@ const Expenses = () => {
                                     }
                                     setFile(img);
                                 }}
+                                required
                             />
                         </label>
                     </div>
-                    <form onSubmit={(e) => {handleSubmit(e)}}>
+                    <form onSubmit={(e) => {clickedExpense? handleSubmitUpdate(e) : handleSubmitInsert(e)}}>
                         <div className="text-edit-container">
-                            <input name="title" type="text" placeholder="Title" value={expenseData.title} onChange={(e) => {setExpenseData({...expenseData, title: e.target.value})}} />
+                            <input name="title" type="text" placeholder="Title" value={expenseData.title} onChange={(e) => {setExpenseData({...expenseData, title: e.target.value})}} required/>
                         </div>
                         <div className="text-edit-container">
-                            <input name="date" type="text" placeholder="Date" value={expenseData.date} onChange={(e) => {setExpenseData({...expenseData, date: e.target.value})}} />
+                            <input name="date" type="text" placeholder="Date" value={expenseData.date} onChange={(e) => {setExpenseData({...expenseData, date: e.target.value})}} required/>
                         </div>
                         <div className="text-edit-container">
-                            <input name="description" type="text" placeholder="Dscription" value={expenseData.description} onChange={(e) => {setExpenseData({...expenseData, description: e.target.value})}} />
+                            <input name="description" type="text" placeholder="Dscription" value={expenseData.description} onChange={(e) => {setExpenseData({...expenseData, description: e.target.value})}} required/>
                         </div>
                         <div className="text-edit-container submit-btn-container">
-                            <input name="submit" type="submit" value='Update' onChange={() => {}} />
+                            <input id="insert-update-button" name="submit" type="submit" value={clickedExpense? 'Update' : 'Insert'}/>
                         </div>
                     </form>
                 </div>    

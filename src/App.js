@@ -16,8 +16,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Home />}/>
-          <Route path='/login' element={user === null ? <Login /> : <Navigate to="/dashboard" replace={true} />}/>
-          <Route path='/dashboard' element={user === null ? <Navigate to="/login" replace={true} /> : <Dashboard />}/>
+          <Route path='/login' element={user === null ? <Login /> : <Navigate to="/expense" replace={true} />}/>
+          {/* <Route path='/dashboard' element={user === null ? <Navigate to="/login" replace={true} /> : <Dashboard />}/> */}
           <Route path='/expense' element={user === null ? <Navigate to="/login" replace={true} /> : <Expenses />}/>
         </Routes>
       </BrowserRouter>
