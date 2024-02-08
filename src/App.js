@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div className="App">
-      <BrowserRouter basename='/expense-tracker-demo-serverless'>
+      <BrowserRouter>
         <Routes>
           <Route path='/expense-tracker-demo-serverless' element={<Home />}/>
           <Route path='/login' element={user === null ? <Login /> : <Navigate to="/expense" replace={true} />}/>
